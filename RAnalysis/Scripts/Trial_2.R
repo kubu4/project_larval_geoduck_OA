@@ -112,30 +112,42 @@ larval.counts$Live.cells.ml <- larval.counts$Avg.Live/larval.counts$Volume.Count
 larval.counts$Dead.cells.ml <- larval.counts$Avg.Dead/larval.counts$Volume.Counted.ml #calculate density
 larval.counts$total.live.larvae <- larval.counts$Live.cells.ml*larval.counts$Vol.Tripour
 larval.counts$total.dead.larvae <- larval.counts$Dead.cells.ml*larval.counts$Vol.Tripour
-larval.counts$per.mort <- ((larval.counts$total.dead.larvae/(larval.counts$total.live.larvae+larval.counts$total.dead.larvae))*100)
+larval.counts$per.sur <- ((larval.counts$total.live.larvae/(larval.counts$total.live.larvae[1]))*100)
+
 #calculate mean and se of live larvae
 larval.counts.means <- aggregate(total.live.larvae ~ Part*Time*Treatment, data=larval.counts, mean)
 larval.counts.ses <- aggregate(total.live.larvae ~ Part*Time*Treatment, data=larval.counts, std.error)
 means <- cbind(larval.counts.means, larval.counts.ses$total.live.larvae) #create dataframe
 colnames(means) <- c("Part", "Time", "Treatment","mean","se") #rename columns
 
+#calculate mean and se of percent survival
+larval.survival.means <- aggregate(per.sur ~ Part*Time*Treatment, data=larval.counts, mean)
+larval.survival.ses <- aggregate(per.sur ~ Part*Time*Treatment, data=larval.counts, std.error)
+sur.means <- cbind(larval.survival.means, larval.survival.ses$per.sur) #create dataframe
+colnames(sur.means) <- c("Part", "Time", "Treatment","mean","se") #rename columns
+
+
 #plot survivorship
-Fig.Survivorship <- ggplot(means, aes(x=Time, y=mean, group=Treatment)) + 
+Fig.Survivorship <- ggplot(sur.means, aes(x=Time, y=mean, group=Treatment)) + 
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
-  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=4) + #plot points
+  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=2) + #plot points
   scale_shape_manual(values=c(16,17,15,17)) +
   geom_line(aes(linetype=Treatment), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   scale_x_discrete(limits=c("Time0", "Time1", "Time2", "Time3", "Time4", "Time5"))+
   xlab("Time") + #Label the X Axis
-  ylab("Live Larvae") + #Label the Y Axis
+  ylab("% Survivorship") + #Label the Y Axis
   theme_bw() + #Set the background color
   theme(axis.line = element_line(color = 'black'), #Set the axes color
         axis.title=element_text(size=14,face="bold"), #Set axis format
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         panel.border = element_blank(), #Set the border
+        axis.line.x = element_line(color = 'black'), #Set the axes color
+        axis.line.y = element_line(color = 'black'), #Set the axes color
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background =element_blank(), #Set the plot background
-        legend.key = element_blank()) #Set plot legend key
+        legend.key = element_blank(), #Set plot legend key
+        legend.position=c(0.8,0.6)) #set legend position
 Fig.Survivorship
 
 #####Larval Size#####
@@ -162,66 +174,82 @@ colnames(sizes) <- c("Treatment","Time", "Trial", "Length", "Width", "Area", "Ra
 
 Fig.Length <- ggplot(sizes, aes(x=Time, y=Length, group=Treatment)) + 
   geom_errorbar(aes(ymin=Length-Length.se, ymax=Length+Length.se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
-  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=4) + #plot points
+  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=2) + #plot points
   geom_line(aes(linetype=Treatment), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   xlab("Time") + #Label the X Axis
   ylab("Shell Length mm") + #Label the Y Axis
   theme_bw() + #Set the background color
   theme(axis.line = element_line(color = 'black'), #Set the axes color
         axis.title=element_text(size=14,face="bold"), #Set axis format
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         panel.border = element_blank(), #Set the border
+        axis.line.x = element_line(color = 'black'), #Set the axes color
+        axis.line.y = element_line(color = 'black'), #Set the axes color
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background =element_blank(), #Set the plot background
-        legend.key = element_blank()) #Set plot legend key
+        legend.key = element_blank(), #Set plot legend key
+        legend.position=c(0.8,0.3)) #set legend position
 Fig.Length
 
 Fig.Width <- ggplot(sizes, aes(x=Time, y=Width, group=Treatment)) + 
   geom_errorbar(aes(ymin=Width-Width.se, ymax=Width+Width.se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
-  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=4) + #plot points
+  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=2) + #plot points
   geom_line(aes(linetype=Treatment), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   xlab("Time") + #Label the X Axis
   ylab("Shell Width mm") + #Label the Y Axis
   theme_bw() + #Set the background color
   theme(axis.line = element_line(color = 'black'), #Set the axes color
         axis.title=element_text(size=14,face="bold"), #Set axis format
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         panel.border = element_blank(), #Set the border
+        axis.line.x = element_line(color = 'black'), #Set the axes color
+        axis.line.y = element_line(color = 'black'), #Set the axes color
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background =element_blank(), #Set the plot background
-        legend.key = element_blank()) #Set plot legend key
+        legend.key = element_blank(), #Set plot legend key
+        legend.position='none') #remove legend background
 Fig.Width
 
 Fig.Area <- ggplot(sizes, aes(x=Time, y=Area, group=Treatment)) + 
   geom_errorbar(aes(ymin=Area-Area.se, ymax=Area+Area.se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
-  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=4) + #plot points
+  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=2) + #plot points
   geom_line(aes(linetype=Treatment), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   xlab("Time") + #Label the X Axis
   ylab("Shell Area mm2") + #Label the Y Axis
   theme_bw() + #Set the background color
   theme(axis.line = element_line(color = 'black'), #Set the axes color
         axis.title=element_text(size=14,face="bold"), #Set axis format
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         panel.border = element_blank(), #Set the border
+        axis.line.x = element_line(color = 'black'), #Set the axes color
+        axis.line.y = element_line(color = 'black'), #Set the axes color
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background =element_blank(), #Set the plot background
-        legend.key = element_blank()) #Set plot legend key
+        legend.key = element_blank(), #Set plot legend key
+        legend.position='none') #remove legend background
 Fig.Area
 
 Fig.Ratio <- ggplot(sizes, aes(x=Time, y=Ratio, group=Treatment)) + 
   geom_errorbar(aes(ymin=Ratio-Ratio.se, ymax=Ratio+Ratio.se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
-  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=4) + #plot points
+  geom_point(aes(shape=Treatment), position = position_dodge(width = 0.2), size=2) + #plot points
   geom_line(aes(linetype=Treatment), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   xlab("Time") + #Label the X Axis
   ylab("Shell Ratio (W:L)") + #Label the Y Axis
   theme_bw() + #Set the background color
   theme(axis.line = element_line(color = 'black'), #Set the axes color
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), #Set the text angle
         axis.title=element_text(size=14,face="bold"), #Set axis format
         panel.border = element_blank(), #Set the border
+        axis.line.x = element_line(color = 'black'), #Set the axes color
+        axis.line.y = element_line(color = 'black'), #Set the axes color
         panel.grid.major = element_blank(), #Set the major gridlines
         panel.grid.minor = element_blank(), #Set the minor gridlines
         plot.background =element_blank(), #Set the plot background
-        legend.key = element_blank()) #Set plot legend key
+        legend.key = element_blank(), #Set plot legend key
+        legend.position='none') #remove legend 
 Fig.Ratio
 
 setwd("/Users/hputnam/MyProjects/Geoduck_Epi/project_larval_geoduck_OA/RAnalysis/Output")
